@@ -10,11 +10,11 @@ interface SkillsPreviewProps {
 const SkillsPreview: React.FC<SkillsPreviewProps> = ({ skills }) => {
   if (skills.length === 0) return null;
   return (
-    <section className="mb-2">
-      <h3 className="font-sans text-primary border-b border-primary/50 pb-0.5 mb-1">Skills</h3>
-      <div className="flex flex-wrap gap-1">
+    <section className="mb-3"> {/* Increased mb */}
+      <h3 className="font-sans text-primary border-b border-primary/50 pb-0.5 mb-1.5">Skills</h3> {/* Increased mb */}
+      <div className="flex flex-wrap gap-1.5"> {/* Increased gap */}
         {skills.map((skill) => (
-          <Badge key={skill} variant="secondary" className="font-serif text-[8.5pt] bg-primary/10 text-primary py-0 px-1 leading-tight">
+          <Badge key={skill} variant="secondary" className="font-serif text-[8.5pt] bg-primary/10 text-primary py-0.5 px-1.5 leading-snug"> {/* Adjusted padding/line-height */}
             {skill}
           </Badge>
         ))}
@@ -24,3 +24,4 @@ const SkillsPreview: React.FC<SkillsPreviewProps> = ({ skills }) => {
 };
 
 export default SkillsPreview;
+

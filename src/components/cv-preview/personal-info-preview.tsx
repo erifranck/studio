@@ -10,10 +10,10 @@ interface PersonalInfoPreviewProps {
 
 const PersonalInfoPreview: React.FC<PersonalInfoPreviewProps> = ({ data }) => {
   return (
-    <div className="text-center mb-2 border-b pb-2 border-gray-300">
+    <div className="text-center mb-3 border-b pb-3 border-gray-300"> {/* Increased mb and pb */}
       <h1 className="font-bold font-sans text-primary leading-tight">{data.name || "Your Name"}</h1>
-      <h2 className="font-sans text-foreground/80 mb-1 leading-tight">{data.title || "Your Title"}</h2>
-      <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-0.5 text-foreground/70 font-serif">
+      <h2 className="font-sans text-foreground/80 mb-1.5 leading-tight">{data.title || "Your Title"}</h2> {/* Increased mb */}
+      <div className="flex flex-wrap justify-center items-center gap-x-2.5 gap-y-1 text-foreground/70 font-serif"> {/* Increased gaps */}
         {data.email && (
           <a href={`mailto:${data.email}`} className="flex items-center gap-1 hover:text-primary transition-colors contact-info-item">
             <Mail /> {data.email}
@@ -30,7 +30,7 @@ const PersonalInfoPreview: React.FC<PersonalInfoPreviewProps> = ({ data }) => {
           </span>
         )}
       </div>
-      <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-0 mt-0.5 text-foreground/70 font-serif">
+      <div className="flex flex-wrap justify-center items-center gap-x-2.5 gap-y-0.5 mt-1 text-foreground/70 font-serif"> {/* Increased gaps and mt */}
          {data.linkedin && (
           <a href={`https://${data.linkedin.replace(/^https?:\/\//, '')}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary transition-colors contact-info-item">
             <Linkedin /> {data.linkedin.replace(/^https?:\/\//, '').replace(/^www\./,'')}
@@ -52,3 +52,4 @@ const PersonalInfoPreview: React.FC<PersonalInfoPreviewProps> = ({ data }) => {
 };
 
 export default PersonalInfoPreview;
+

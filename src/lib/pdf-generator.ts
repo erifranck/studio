@@ -15,7 +15,6 @@ export const downloadPdf = async (elementId: string, fileName: string = 'cv.pdf'
       scale: 2.5, // Increased scale for better clarity
       useCORS: true,
       logging: false,
-      // Ensure canvas captures based on actual content size rather than just viewport-constrained size
       windowWidth: input.scrollWidth,
       windowHeight: input.scrollHeight,
     });
@@ -32,32 +31,33 @@ export const downloadPdf = async (elementId: string, fileName: string = 'cv.pdf'
     const pdfPageHeight = pdf.internal.pageSize.getHeight();
     
     const margin = 30; // Define page margin (in points)
-    const contentWidth = pdfPageWidth - (2 * margin);
-    const contentHeight = pdfPageHeight - (2 * margin);
+    const contentAreaWidth = pdfPageWidth - (2 * margin); // Renamed for clarity
+    const contentAreaHeight = pdfPageHeight - (2 * margin); // Renamed for clarity
     
     const canvasProps = pdf.getImageProperties(imgData);
     const canvasWidth = canvasProps.width;
     const canvasHeight = canvasProps.height;
 
-    // Calculate scaling factor to fit content within margins
-    const scaleFactor = contentWidth / canvasWidth;
+    const scaleFactor = contentAreaWidth / canvasWidth;
     const totalPdfHeightOfContent = canvasHeight * scaleFactor;
 
-    if (totalPdfHeightOfContent <= contentHeight) {
+    if (totalPdfHeightOfContent <= contentAreaHeight) {
       // Content fits on a single PDF page (within margins)
-      const effectiveImgHeight = totalPdfHeightOfContent; // canvasHeight * scaleFactor
-      const effectiveImgWidth = contentWidth; // canvasWidth * scaleFactor;
+      const effectiveImgHeight = totalPdfHeightOfContent;
+      const effectiveImgWidth = contentAreaWidth;
       
-      // Center the image within the content area (margins accounted for)
-      const xOffset = margin + (contentWidth - effectiveImgWidth) / 2; // Should be just margin if effectiveImgWidth is contentWidth
-      const yOffset = margin + (contentHeight - effectiveImgHeight) / 2;
+      const xOffset = margin;
+      const yOffset = margin + (contentAreaHeight - effectiveImgHeight) / 2; // Center vertically if space allows
       
       pdf.addImage(imgData, 'PNG', xOffset, yOffset, effectiveImgWidth, effectiveImgHeight);
     } else {
       // Content needs to be split across multiple pages
-      // The height of the canvas slice that corresponds to one PDF page's content area
-      const sourcePageHeightInCanvasPixels = contentHeight / scaleFactor;
-      let canvasCutY = 0; // The Y-coordinate in the source canvas from where to start slicing
+      const pageSliceBuffer = 10; // 10pt buffer at the bottom of the printable area to avoid cutting lines
+      const effectiveContentHeightForSlicing = contentAreaHeight - pageSliceBuffer;
+
+      // The height of the canvas slice that corresponds to one PDF page's effective content area
+      const sourcePageHeightInCanvasPixels = effectiveContentHeightForSlicing / scaleFactor;
+      let canvasCutY = 0; 
 
       let pageNumber = 0;
       while (canvasCutY < canvasHeight) {
@@ -68,7 +68,6 @@ export const downloadPdf = async (elementId: string, fileName: string = 'cv.pdf'
 
         let sliceCanvasHeight = sourcePageHeightInCanvasPixels;
         
-        // Adjust slice height for the last part of the canvas
         if (canvasCutY + sliceCanvasHeight > canvasHeight) {
           sliceCanvasHeight = canvasHeight - canvasCutY;
         }
@@ -82,25 +81,24 @@ export const downloadPdf = async (elementId: string, fileName: string = 'cv.pdf'
         
         if (pageCtx) {
           pageCtx.drawImage(
-            canvas,              // Source image (the full CV canvas)
-            0,                   // Source X
-            canvasCutY,          // Source Y (where to start slicing from the large canvas)
-            canvasWidth,         // Source Width (full width of the large canvas)
-            sliceCanvasHeight,   // Source Height (height of the slice)
-            0,                   // Destination X on pageCanvas
-            0,                   // Destination Y on pageCanvas
-            canvasWidth,         // Destination Width on pageCanvas
-            sliceCanvasHeight    // Destination Height on pageCanvas
+            canvas,             
+            0,                  
+            canvasCutY,         
+            canvasWidth,        
+            sliceCanvasHeight,  
+            0,                  
+            0,                  
+            canvasWidth,        
+            sliceCanvasHeight   
           );
           const pageImgData = pageCanvas.toDataURL('image/png');
           
-          // Add this slice to the PDF, fitting it to contentWidth and scaled height
           const destHeightOnPdf = sliceCanvasHeight * scaleFactor;
-          pdf.addImage(pageImgData, 'PNG', margin, margin, contentWidth, destHeightOnPdf);
+          pdf.addImage(pageImgData, 'PNG', margin, margin, contentAreaWidth, destHeightOnPdf);
         }
         
         canvasCutY += sliceCanvasHeight;
-         if (pageNumber > 20) { // Safety break for very long content
+         if (pageNumber > 20) { 
             console.warn("PDF generation stopped after 20 pages to prevent infinite loop.");
             break;
         }
@@ -113,3 +111,4 @@ export const downloadPdf = async (elementId: string, fileName: string = 'cv.pdf'
     alert("An error occurred while generating the PDF. Please try again.");
   }
 };
+
