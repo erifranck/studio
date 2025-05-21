@@ -1,3 +1,4 @@
+
 // src/app/page.tsx
 "use client";
 
@@ -51,7 +52,16 @@ export default function CVForgePage() {
     // Dynamically import PDFDownloadLink on the client side after mount
     import('@react-pdf/renderer')
       .then(mod => {
-        setDynamicPDFDownloadLink(() => mod.PDFDownloadLink); // Use functional update to ensure correct state update
+        if (typeof mod.PDFDownloadLink === 'function' || (typeof mod.PDFDownloadLink === 'object' && mod.PDFDownloadLink !== null)) {
+          setDynamicPDFDownloadLink(() => mod.PDFDownloadLink); // Use functional update to ensure correct state update
+        } else {
+          console.error("PDFDownloadLink resolved to an invalid type:", mod.PDFDownloadLink);
+          toast({
+            title: "Error Loading PDF Component",
+            description: "The PDF download component did not load correctly. Please try refreshing.",
+            variant: "destructive",
+          });
+        }
       })
       .catch(err => {
         console.error("Failed to load PDFDownloadLink:", err);
@@ -61,7 +71,7 @@ export default function CVForgePage() {
           variant: "destructive",
         });
       });
-  }, [toast]); // toast is a dependency if used inside useEffect
+  }, []); // Ensuring this effect runs only once on mount
 
   // Save CV data to localStorage whenever it changes
   useEffect(() => {
@@ -94,11 +104,8 @@ export default function CVForgePage() {
               fileName={`${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`}>
               {({ blob, url, loading: pdfLoading, error: pdfError }) => {
                 if (pdfError) {
-                  // Handle error state, perhaps show a different button or toast
-                   // This toast will be shown if react-pdf itself reports an error generating the document
-                   // To avoid potential rapid re-renders with toasts, it's often better to display UI indication
-                   // or use a useEffect to trigger the toast once when pdfError appears.
-                   // For simplicity, we'll just change the button text/state here.
+                  console.error("react-pdf render error:", pdfError);
+                  // Display an error state for the button, or toast once
                   return (
                      <Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" disabled>
                        PDF Error
