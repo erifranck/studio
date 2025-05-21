@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Montserrat, Merriweather } from 'next/font/google';
+import { Montserrat } from 'next/font/google'; // Changed from Merriweather
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
@@ -7,15 +7,7 @@ const montserrat = Montserrat({
   subsets: ['latin'],
   variable: '--font-montserrat',
   display: 'swap',
-  weight: ['400', '500', '600', '700'],
-});
-
-const merriweather = Merriweather({
-  subsets: ['latin'],
-  variable: '--font-merriweather',
-  display: 'swap',
-  weight: ['400', '700'],
-  style: ['normal', 'italic'],
+  weight: ['300', '400', '500', '600', '700', '800'], // Added more weights if needed
 });
 
 export const metadata: Metadata = {
@@ -30,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${montserrat.variable} ${merriweather.variable} font-serif antialiased`}>
+      <body className={`${montserrat.variable} font-sans antialiased`}> {/* Removed merriweather */}
         {children}
         <Toaster />
       </body>

@@ -13,18 +13,23 @@ const EducationPreview: React.FC<EducationPreviewProps> = ({ education }) => {
     <section className="mb-4"> 
       <h3 className="cv-section-header font-sans">Education</h3>
       {education.map((item) => (
-        <div key={item.id} className="mb-3 cv-page-break-avoid last:mb-0"> 
-          <h4 className="cv-item-title font-sans">{item.degree || "Degree Name"}</h4>
-          <p className="cv-item-meta font-sans !mb-0.5">  {/* Reduced margin, specific class for meta */}
-            {item.institution || "Institution Name"}
-            {item.location && ` | ${item.location}`}
-          </p>
-          <p className="cv-item-meta font-sans !text-[9pt] !mb-1">{item.graduationDate || "Graduation Date"}</p> {/* Smaller font for dates, reduced margin */}
-          {item.description && (
-            <p className="font-serif whitespace-pre-line !text-[9.5pt]"> {/* Slightly smaller for description */}
-              {item.description}
-            </p>
-          )}
+        <div key={item.id} className="mb-3 text-xs">
+           <div className="flex">
+            <div className="w-1/3 pr-2"> {/* Dates column */}
+              <p className="cv-item-dates">{item.graduationDate || "Graduation Date"}</p>
+            </div>
+            <div className="w-2/3"> {/* Main content column */}
+              <h4 className="cv-item-title font-sans">{item.institution || "Institution Name"}</h4>
+              <p className="cv-item-subtitle font-sans !mb-0.5">
+                {item.degree || "Degree Name"}
+              </p>
+              {item.description && (
+                <ul className="font-sans list-disc pl-4 mt-1">
+                  {item.description.split('\n').map((line, i) => line.trim() && <li key={i} className="text-xs leading-snug">{line.replace(/^- /, '')}</li>)}
+                </ul>
+              )}
+            </div>
+          </div>
         </div>
       ))}
     </section>
