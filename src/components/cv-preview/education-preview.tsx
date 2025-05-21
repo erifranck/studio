@@ -10,17 +10,18 @@ interface EducationPreviewProps {
 const EducationPreview: React.FC<EducationPreviewProps> = ({ education }) => {
   if (education.length === 0) return null;
   return (
-    <section className="mb-3"> {/* Increased mb */}
-      <h3 className="font-sans text-primary border-b border-primary/50 pb-0.5 mb-1.5">Education</h3> {/* Increased mb */}
+    <section className="mb-4"> 
+      <h3 className="cv-section-header font-sans">Education</h3>
       {education.map((item) => (
-        <div key={item.id} className="mb-2 last:mb-0"> {/* Increased mb */}
-          <h4 className="font-sans text-foreground leading-tight">{item.degree || "Degree"}</h4>
-          <p className="text-[9pt] font-medium font-sans text-foreground/80 leading-tight">
-            {item.institution || "Institution"} | {item.location || "Location"}
+        <div key={item.id} className="mb-3 cv-page-break-avoid last:mb-0"> 
+          <h4 className="cv-item-title font-sans">{item.degree || "Degree Name"}</h4>
+          <p className="cv-item-meta font-sans !mb-0.5">  {/* Reduced margin, specific class for meta */}
+            {item.institution || "Institution Name"}
+            {item.location && ` | ${item.location}`}
           </p>
-          <p className="text-[8pt] text-muted-foreground font-sans mb-1 leading-tight">{item.graduationDate || "Graduation Date"}</p> {/* Increased mb */}
+          <p className="cv-item-meta font-sans !text-[9pt] !mb-1">{item.graduationDate || "Graduation Date"}</p> {/* Smaller font for dates, reduced margin */}
           {item.description && (
-            <p className="text-foreground/90 font-serif whitespace-pre-line text-[8.5pt] mt-0.5"> {/* Added mt */}
+            <p className="font-serif whitespace-pre-line !text-[9.5pt]"> {/* Slightly smaller for description */}
               {item.description}
             </p>
           )}
@@ -31,4 +32,3 @@ const EducationPreview: React.FC<EducationPreviewProps> = ({ education }) => {
 };
 
 export default EducationPreview;
-

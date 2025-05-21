@@ -1,7 +1,6 @@
 
 // src/components/cv-preview/skills-preview.tsx
 import type React from 'react';
-import { Badge } from '@/components/ui/badge';
 
 interface SkillsPreviewProps {
   skills: string[];
@@ -10,18 +9,13 @@ interface SkillsPreviewProps {
 const SkillsPreview: React.FC<SkillsPreviewProps> = ({ skills }) => {
   if (skills.length === 0) return null;
   return (
-    <section className="mb-3"> {/* Increased mb */}
-      <h3 className="font-sans text-primary border-b border-primary/50 pb-0.5 mb-1.5">Skills</h3> {/* Increased mb */}
-      <div className="flex flex-wrap gap-1.5"> {/* Increased gap */}
-        {skills.map((skill) => (
-          <Badge key={skill} variant="secondary" className="font-serif text-[8.5pt] bg-primary/10 text-primary py-0.5 px-1.5 leading-snug"> {/* Adjusted padding/line-height */}
-            {skill}
-          </Badge>
-        ))}
-      </div>
+    <section className="mb-4 cv-page-break-avoid"> 
+      <h3 className="cv-section-header font-sans">Skills</h3>
+      <p className="font-serif">
+        {skills.join(', ')}
+      </p>
     </section>
   );
 };
 
 export default SkillsPreview;
-
