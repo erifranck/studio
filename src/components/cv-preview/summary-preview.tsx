@@ -8,9 +8,9 @@ interface SummaryPreviewProps {
 const SummaryPreview: React.FC<SummaryPreviewProps> = ({ summary }) => {
   if (!summary) return null;
   return (
-    <section className="mb-6">
-      <h3 className="text-2xl font-semibold font-sans text-primary border-b-2 border-primary/50 pb-1 mb-3">Summary</h3>
-      <p className="text-foreground/90 text-base leading-relaxed font-serif whitespace-pre-line">
+    <section className="mb-4">
+      <h3 className="text-xl font-semibold font-sans text-primary border-b border-primary/50 pb-0.5 mb-2">Summary</h3>
+      <p className="text-foreground/90 text-sm leading-normal font-serif whitespace-pre-line">
         {summary}
       </p>
     </section>
