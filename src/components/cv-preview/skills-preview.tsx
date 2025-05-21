@@ -9,11 +9,11 @@ interface SkillsPreviewProps {
 const SkillsPreview: React.FC<SkillsPreviewProps> = ({ skills }) => {
   if (skills.length === 0) return null;
   return (
-    <section className="mb-4">
-      <h3 className="text-xl font-semibold font-sans text-primary border-b border-primary/50 pb-0.5 mb-2">Skills</h3>
-      <div className="flex flex-wrap gap-1.5">
+    <section className="mb-2.5">
+      <h3 className="text-lg font-semibold font-sans text-primary border-b border-primary/50 pb-0.5 mb-1.5">Skills</h3>
+      <div className="flex flex-wrap gap-1">
         {skills.map((skill) => (
-          <Badge key={skill} variant="secondary" className="font-serif text-xs bg-primary/10 text-primary py-0.5 px-2">
+          <Badge key={skill} variant="secondary" className="font-serif text-[9pt] bg-primary/10 text-primary py-0.5 px-1.5 leading-tight">
             {skill}
           </Badge>
         ))}
