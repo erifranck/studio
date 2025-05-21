@@ -1,3 +1,4 @@
+
 // src/components/cv-preview/cv-preview.tsx
 "use client"; // Needs to be client for html2canvas to pick it up if it's dynamic
 import type React from 'react';
@@ -25,8 +26,8 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
                 -webkit-font-smoothing: antialiased;
                 -moz-osx-font-smoothing: grayscale;
                 text-rendering: optimizeLegibility;
-                font-size: 10pt; /* Base font size for PDF like appearance */
-                line-height: 1.3; 
+                font-size: 9pt; /* Base font size for PDF like appearance */
+                line-height: 1.25; 
               }
               #cv-preview-content h1, 
               #cv-preview-content h2, 
@@ -41,53 +42,58 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
               #cv-preview-content div,
               #cv-preview-content .font-serif {
                 font-family: var(--font-merriweather), serif !important;
-                font-size: 10pt; /* Ensure body text is small */
-                line-height: 1.3;
+                font-size: 9pt; /* Ensure body text is small */
+                line-height: 1.25;
               }
               #cv-preview-content ul {
-                padding-left: 1rem; 
+                padding-left: 1rem; /* 16px */
                 list-style-type: disc; 
               }
               #cv-preview-content li {
-                margin-bottom: 0.1rem; /* Tighter spacing for list items */
-                font-size: 9.5pt; /* Slightly smaller for bullets */
-                line-height: 1.25;
+                margin-bottom: 0.05rem; /* Tighter spacing for list items */
+                font-size: 8.5pt; 
+                line-height: 1.2;
               }
               #cv-preview-content h1 { /* Name */
-                font-size: 20pt;
-                margin-bottom: 0.15rem;
+                font-size: 18pt;
+                margin-bottom: 0.1rem;
                 margin-top: 0;
+                line-height: 1.1;
               }
               #cv-preview-content h2 { /* Title below name */
-                font-size: 12pt;
-                margin-bottom: 0.25rem;
+                font-size: 11pt;
+                margin-bottom: 0.2rem;
                 margin-top: 0;
+                line-height: 1.1;
               }
               #cv-preview-content h3 { /* Section headers */
-                font-size: 14pt; 
-                margin-bottom: 0.3rem; 
-                margin-top: 0.6rem;
-                padding-bottom: 0.1rem;
-                border-bottom-width: 1px; 
+                font-size: 13pt; 
+                font-weight: 600; /* Semibold */
+                margin-bottom: 0.25rem; 
+                margin-top: 0.5rem;
+                padding-bottom: 0.05rem;
+                border-bottom-width: 0.5px; 
+                line-height: 1.2;
               }
                #cv-preview-content h4 { /* Job Title / Degree */
-                font-size: 11pt;
-                margin-bottom: 0.1rem;
-                margin-top: 0.2rem;
+                font-size: 10pt;
+                font-weight: 600; /* Semibold */
+                margin-bottom: 0.05rem;
+                margin-top: 0.15rem;
+                line-height: 1.2;
               }
               #cv-preview-content p {
-                font-size: 10pt; 
-                line-height: 1.3; 
-                margin-bottom: 0.25rem;
+                font-size: 9pt; 
+                line-height: 1.25; 
+                margin-bottom: 0.2rem;
               }
-              /* Specific adjustments for contact info if needed */
               #cv-preview-content .contact-info-item {
-                font-size: 9pt !important;
-                gap: 0.2rem !important; /* Reduce gap for icons */
+                font-size: 8.5pt !important;
+                gap: 0.15rem !important; 
               }
                #cv-preview-content .contact-info-item svg {
-                width: 10px !important; /* Smaller icons */
-                height: 10px !important;
+                width: 9px !important; 
+                height: 9px !important;
               }
             `}</style>
           <PersonalInfoPreview data={cvData.personalInfo} />
@@ -102,4 +108,3 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
 };
 
 export default CvPreview;
-
