@@ -1,7 +1,7 @@
 // src/app/page.tsx
 "use client";
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
 import CvPreview from '@/components/cv-preview/cv-preview';
@@ -9,10 +9,11 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import CvForgeLogo from '@/components/cv-forge-logo';
 import { downloadPdf } from '@/lib/pdf-generator';
-import AiEnhancementDialog from '@/components/ai-enhancement-dialog'; // Ensure this path is correct
+import AiEnhancementDialog from '@/components/ai-enhancement-dialog';
 import { useToast } from '@/hooks/use-toast';
 
 const CV_PREVIEW_ELEMENT_ID = "cv-preview-content";
+const CV_STORAGE_KEY = 'cvForgeData';
 
 export default function CVForgePage() {
   const [cvData, setCvData] = useState<CVData>(initialCvData);
@@ -20,6 +21,33 @@ export default function CVForgePage() {
   const [textToEnhance, setTextToEnhance] = useState("");
   const [applyEnhancementCallback, setApplyEnhancementCallback] = useState<((newText: string) => void) | null>(null);
   const { toast } = useToast();
+
+  // Load CV data from localStorage on initial mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedData = localStorage.getItem(CV_STORAGE_KEY);
+      if (savedData) {
+        try {
+          const parsedData = JSON.parse(savedData);
+          // You might want to add validation here to ensure parsedData conforms to CVData structure
+          setCvData(parsedData);
+        } catch (error) {
+          console.error("Failed to parse CV data from localStorage:", error);
+          // If parsing fails, remove the corrupted data
+          localStorage.removeItem(CV_STORAGE_KEY);
+        }
+      }
+    }
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Save CV data to localStorage whenever it changes
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Debounce or throttle this if cvData changes very frequently,
+      // but for typical form input, direct saving is usually fine.
+      localStorage.setItem(CV_STORAGE_KEY, JSON.stringify(cvData));
+    }
+  }, [cvData]); // This effect runs whenever cvData changes
 
   const handleDownloadPdf = async () => {
     toast({ title: "Generating PDF...", description: "Please wait while your CV is being prepared." });
@@ -34,7 +62,7 @@ export default function CVForgePage() {
 
   const openAiEnhanceDialog = useCallback((currentText: string, onApply: (newText: string) => void) => {
     setTextToEnhance(currentText);
-    setApplyEnhancementCallback(() => onApply); // Store the callback
+    setApplyEnhancementCallback(() => onApply);
     setIsAiDialogOpen(true);
   }, []);
 
@@ -42,7 +70,7 @@ export default function CVForgePage() {
     if (applyEnhancementCallback) {
       applyEnhancementCallback(enhancedText);
     }
-    setIsAiDialogOpen(false); // Close dialog after applying
+    setIsAiDialogOpen(false);
   };
 
   return (
@@ -57,16 +85,15 @@ export default function CVForgePage() {
       </header>
 
       <main className="flex-grow container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 py-8 px-4">
-        <div className="md:pr-4"> {/* Editor column */}
+        <div className="md:pr-4">
           <CvEditor 
             cvData={cvData} 
             setCvData={setCvData} 
             openAiEnhanceDialog={openAiEnhanceDialog} 
           />
         </div>
-        <div className="relative"> {/* Preview column */}
-          {/* Sticky container for preview, considering header height */}
-          <div className="md:sticky md:top-[calc(4rem+2rem)]"> {/* 4rem header + 2rem desired gap */}
+        <div className="relative">
+          <div className="md:sticky md:top-[calc(4rem+2rem)]">
              <CvPreview cvData={cvData} />
           </div>
         </div>
