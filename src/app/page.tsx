@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
-import CvPreview from '@/components/cv-preview/cv-preview';
+import { CVPreview } from '@/components/cv-preview/cv-preview';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import CvForgeLogo from '@/components/cv-forge-logo';
@@ -108,7 +108,7 @@ export default function CVForgePage() {
         </div>
         <div className="relative">
           <div className="md:sticky md:top-[calc(4rem+2rem)]">
-             <CvPreview cvData={cvData} />
+             <CVPreview cvData={cvData} />
           </div>
         </div>
       </main>
