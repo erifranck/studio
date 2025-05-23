@@ -1,8 +1,7 @@
-
 // src/components/cv-preview/cv-preview.tsx
 "use client"; 
 import type React from 'react';
-import { type CVData } from '@/types/cv';
+import { type CVData, type QualificationEntry } from '@/types/cv';
 import PersonalInfoPreview from './personal-info-preview';
 import PersonalStatementPreview from './personal-statement-preview'; // Renamed
 import ExperiencePreview from './experience-preview';
@@ -29,15 +28,18 @@ const AdditionalSkillsPreview: React.FC<{ skills: string[] }> = ({ skills }) => 
   );
 };
 
-const QualificationsPreview: React.FC = () => {
+const QualificationsPreview: React.FC<{ qualifications: QualificationEntry[] }> = ({ qualifications }) => {
+  if (qualifications.length === 0) return null;
   return (
     <section className="mb-4">
       <h3 className="cv-section-header font-sans bg-primary text-primary-foreground p-2 my-2 text-sm uppercase">Qualifications</h3>
-      <div className="font-serif text-xs">
-        <p className="text-muted-foreground text-xs italic">2011</p>
-        <p className="font-bold text-primary">FULL CARE CERTIFICATE</p>
-        <p className="text-xs">Relevant Body</p>
-      </div>
+      {qualifications.map((qual) => (
+        <div key={qual.id} className="font-serif text-xs mb-3">
+          <p className="text-muted-foreground text-xs italic">{qual.date}</p>
+          <p className="font-bold text-primary">{qual.name}</p>
+          {qual.issuer && <p className="text-xs">{qual.issuer}</p>}
+        </div>
+      ))}
     </section>
   );
 };
@@ -149,7 +151,7 @@ const CvPreview: React.FC<CvPreviewProps> = ({ cvData }) => {
               <EducationPreview education={cvData.education} />
               <SkillsPreview skills={keySkills} title="Key Skills" />
               <AdditionalSkillsPreview skills={additionalSkillsData} />
-              <QualificationsPreview />
+              <QualificationsPreview qualifications={cvData.qualifications} />
             </div>
           </div>
 

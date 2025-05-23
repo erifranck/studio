@@ -7,6 +7,7 @@ import SummaryEditor from './summary-editor';
 import ExperienceEditor from './experience-editor';
 import EducationEditor from './education-editor';
 import SkillsEditor from './skills-editor';
+import QualificationsEditor from './qualifications-editor';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface CvEditorProps {
@@ -24,6 +25,7 @@ const CvEditor: React.FC<CvEditorProps> = ({ cvData, setCvData, openAiEnhanceDia
         <ExperienceEditor experience={cvData.experience} setCvData={setCvData} openAiEnhanceDialog={openAiEnhanceDialog} />
         <EducationEditor education={cvData.education} setCvData={setCvData} />
         <SkillsEditor skills={cvData.skills} setCvData={setCvData} />
+        <QualificationsEditor qualifications={cvData.qualifications} setCvData={setCvData} />
       </div>
     </ScrollArea>
   );

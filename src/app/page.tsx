@@ -1,8 +1,7 @@
-
 // src/app/page.tsx
 "use client";
 
-import React, { useState, useEffect, useCallback, ComponentType } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
 import CvPreview from '@/components/cv-preview/cv-preview';
@@ -12,27 +11,17 @@ import CvForgeLogo from '@/components/cv-forge-logo';
 import { useToast } from '@/hooks/use-toast';
 import AiEnhancementDialog from '@/components/ai-enhancement-dialog';
 import { CvDocument } from '@/lib/pdf-generator';
-// Import the props type for PDFDownloadLink
-import type { PDFDownloadLinkProps } from '@react-pdf/renderer';
+import { pdf } from '@react-pdf/renderer';
 
 const CV_STORAGE_KEY = 'cvForgeData';
-
-// Placeholder component for when PDFDownloadLink is loading
-const PDFButtonLoading = () => (
-  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground" disabled={true}>
-    <Download className="mr-2 h-4 w-4" /> Loading PDF...
-  </Button>
-);
 
 export default function CVForgePage() {
   const [cvData, setCvData] = useState<CVData>(initialCvData);
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [textToEnhance, setTextToEnhance] = useState("");
   const [applyEnhancementCallback, setApplyEnhancementCallback] = useState<((newText: string) => void) | null>(null);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { toast } = useToast();
-
-  // State to hold the dynamically imported PDFDownloadLink component
-  const [DynamicPDFDownloadLink, setDynamicPDFDownloadLink] = useState<ComponentType<PDFDownloadLinkProps> | null>(null);
 
   useEffect(() => {
     // Load CV data from localStorage
@@ -48,30 +37,7 @@ export default function CVForgePage() {
         }
       }
     }
-
-    // Dynamically import PDFDownloadLink on the client side after mount
-    import('@react-pdf/renderer')
-      .then(mod => {
-        if (typeof mod.PDFDownloadLink === 'function' || (typeof mod.PDFDownloadLink === 'object' && mod.PDFDownloadLink !== null)) {
-          setDynamicPDFDownloadLink(() => mod.PDFDownloadLink); // Use functional update to ensure correct state update
-        } else {
-          console.error("PDFDownloadLink resolved to an invalid type:", mod.PDFDownloadLink);
-          toast({
-            title: "Error Loading PDF Component",
-            description: "The PDF download component did not load correctly. Please try refreshing.",
-            variant: "destructive",
-          });
-        }
-      })
-      .catch(err => {
-        console.error("Failed to load PDFDownloadLink:", err);
-        toast({
-          title: "Error Loading PDF Tool",
-          description: "There was an issue loading the PDF generation tool. Please try refreshing the page.",
-          variant: "destructive",
-        });
-      });
-  }, []); // Ensuring this effect runs only once on mount
+  }, []);
 
   // Save CV data to localStorage whenever it changes
   useEffect(() => {
@@ -79,6 +45,30 @@ export default function CVForgePage() {
       localStorage.setItem(CV_STORAGE_KEY, JSON.stringify(cvData));
     }
   }, [cvData]);
+
+  const handleDownloadPDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      const blob = await pdf(<CvDocument cvData={cvData} />).toBlob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Error Generating PDF",
+        description: "There was an issue generating the PDF. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const openAiEnhanceDialog = useCallback((currentText: string, onApply: (newText: string) => void) => {
     setTextToEnhance(currentText);
@@ -98,30 +88,13 @@ export default function CVForgePage() {
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <CvForgeLogo />
-          {DynamicPDFDownloadLink ? (
-            <DynamicPDFDownloadLink
-              document={<CvDocument cvData={cvData} />}
-              fileName={`${cvData.personalInfo.name.replace(/\s+/g, '_')}_CV.pdf`}>
-              {({ blob, url, loading: pdfLoading, error: pdfError }) => {
-                if (pdfError) {
-                  console.error("react-pdf render error:", pdfError);
-                  // Display an error state for the button, or toast once
-                  return (
-                     <Button className="bg-destructive hover:bg-destructive/90 text-destructive-foreground" disabled>
-                       PDF Error
-                     </Button>
-                  );
-                }
-                return (
-                  <Button className="bg-accent hover:bg-accent/90 text-accent-foreground" disabled={pdfLoading}>
-                    {pdfLoading ? 'Preparing PDF...' : <><Download className="mr-2 h-4 w-4" /> Download PDF</>}
-                  </Button>
-                );
-              }}
-            </DynamicPDFDownloadLink>
-          ) : (
-            <PDFButtonLoading />
-          )}
+          <Button 
+            className="bg-accent hover:bg-accent/90 text-accent-foreground" 
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPDF}
+          >
+            {isGeneratingPDF ? 'Preparing PDF...' : <><Download className="mr-2 h-4 w-4" /> Download PDF</>}
+          </Button>
         </div>
       </header>
 

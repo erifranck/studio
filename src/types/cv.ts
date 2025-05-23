@@ -30,13 +30,12 @@ export interface EducationEntry {
   description?: string; // For bullet points like "Top 10% in the course"
 }
 
-// For future expansion to match wireframe more closely
-// export interface QualificationEntry {
-//   id: string;
-//   date: string;
-//   name: string;
-//   issuer?: string;
-// }
+export interface QualificationEntry {
+  id: string;
+  date: string;
+  name: string;
+  issuer?: string;
+}
 
 export interface CVData {
   personalInfo: PersonalInfo;
@@ -44,7 +43,7 @@ export interface CVData {
   experience: ExperienceEntry[];
   education: EducationEntry[];
   skills: string[]; // Will be used for "Key Skills" and "Additional Skills"
-  // qualifications: QualificationEntry[]; // Future
+  qualifications: QualificationEntry[];
 }
 
 export const initialCvData: CVData = {
@@ -112,9 +111,9 @@ export const initialCvData: CVData = {
     'Empathy',
     'Communication skills'
   ],
-  // qualifications: [ // Example for future data structure
-  //   { id: 'q1', date: '2011', name: 'FULL CARE CERTIFICATE', issuer: 'Relevant Body'}
-  // ]
+  qualifications: [
+    { id: 'q1', date: '2011', name: 'FULL CARE CERTIFICATE', issuer: 'Relevant Body'}
+  ]
 };
 
 // Type for the function that opens the AI enhancement dialog

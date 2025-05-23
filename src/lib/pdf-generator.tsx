@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Link } from '@react-pdf/renderer';
 import { type CVData, type ExperienceEntry, type EducationEntry } from '@/types/cv';
@@ -276,15 +275,19 @@ export const CvDocument: React.FC<{ cvData: CVData }> = ({ cvData }) => (
             </>}
           </View>
 
-          {/* Placeholder for Qualifications */}
-          <View style={styles.section}>
-            <View style={styles.sectionTitleContainer}><Text style={styles.sectionTitle}>Qualifications</Text></View>
-            <View style={styles.educationItem}>
-              <Text style={styles.itemDates}>2011</Text>
-              <Text style={styles.itemTitle}>FULL CARE CERTIFICATE</Text>
-              <Text style={styles.itemSubTitle}>Relevant Body</Text>
+          {/* Qualifications Section */}
+          {cvData.qualifications.length > 0 && (
+            <View style={styles.section}>
+              <View style={styles.sectionTitleContainer}><Text style={styles.sectionTitle}>Qualifications</Text></View>
+              {cvData.qualifications.map((qual) => (
+                <View key={qual.id} style={styles.educationItem}>
+                  <Text style={styles.itemDates}>{qual.date}</Text>
+                  <Text style={styles.itemTitle}>{qual.name}</Text>
+                  {qual.issuer && <Text style={styles.itemSubTitle}>{qual.issuer}</Text>}
+                </View>
+              ))}
             </View>
-          </View>
+          )}
         </View>
       </View>
     </Page>
