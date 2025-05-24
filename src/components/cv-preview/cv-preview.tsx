@@ -2,7 +2,7 @@
 "use client"; 
 import React from 'react';
 import { type CVData } from '@/types/cv';
-import { TemplateHTML } from '../cv-template/default/template-html';
+import { PreviewTemplate } from '../cv-template/default/preview/template';
 
 interface CVPreviewProps {
   cvData: CVData;
@@ -10,8 +10,8 @@ interface CVPreviewProps {
 
 export const CVPreview: React.FC<CVPreviewProps> = ({ cvData }) => {
   return (
-    <div className="w-full h-full overflow-auto bg-white">
-      <TemplateHTML cvData={cvData} />
+    <div className="cv-preview-container w-full h-full overflow-auto bg-white rounded-lg shadow-lg border border-gray-200 p-6">
+      <PreviewTemplate data={cvData} />
     </div>
   );
 };

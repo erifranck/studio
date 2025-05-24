@@ -6,18 +6,20 @@ import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
 import { CVPreview } from '@/components/cv-preview/cv-preview';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Eye } from 'lucide-react';
 import CvForgeLogo from '@/components/cv-forge-logo';
 import { useToast } from '@/hooks/use-toast';
 import AiEnhancementDialog from '@/components/ai-enhancement-dialog';
 import { CvDocument } from '@/lib/pdf-generator';
 import { pdf } from '@react-pdf/renderer';
+import { PDFPreviewModal } from '@/components/pdf-preview-modal';
 
 const CV_STORAGE_KEY = 'cvForgeData';
 
 export default function CVForgePage() {
   const [cvData, setCvData] = useState<CVData>(initialCvData);
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [isPdfPreviewOpen, setIsPdfPreviewOpen] = useState(false);
   const [textToEnhance, setTextToEnhance] = useState("");
   const [applyEnhancementCallback, setApplyEnhancementCallback] = useState<((newText: string) => void) | null>(null);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
@@ -88,13 +90,21 @@ export default function CVForgePage() {
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <CvForgeLogo />
-          <Button 
-            className="bg-accent hover:bg-accent/90 text-accent-foreground" 
-            onClick={handleDownloadPDF}
-            disabled={isGeneratingPDF}
-          >
-            {isGeneratingPDF ? 'Preparing PDF...' : <><Download className="mr-2 h-4 w-4" /> Download PDF</>}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="outline"
+              onClick={() => setIsPdfPreviewOpen(true)}
+            >
+              <Eye className="mr-2 h-4 w-4" /> Preview PDF
+            </Button>
+            <Button 
+              className="bg-accent hover:bg-accent/90 text-accent-foreground" 
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+            >
+              {isGeneratingPDF ? 'Preparing PDF...' : <><Download className="mr-2 h-4 w-4" /> Download PDF</>}
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -121,6 +131,12 @@ export default function CVForgePage() {
           onApplyEnhancement={handleApplyAiEnhancement}
         />
       )}
+
+      <PDFPreviewModal
+        isOpen={isPdfPreviewOpen}
+        onOpenChange={setIsPdfPreviewOpen}
+        cvData={cvData}
+      />
     </div>
   );
 }

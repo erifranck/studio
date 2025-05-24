@@ -1,7 +1,7 @@
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet, Font, Link, PDFDownloadLink, renderToStream } from '@react-pdf/renderer';
 import { type CVData, type ExperienceEntry, type EducationEntry, type QualificationEntry } from '@/types/cv';
-import { BaseTemplate } from '@/components/cv-template/default/template';
+import { BaseTemplate, pdfStyles } from '@/components/cv-template/default/template';
 import { TemplateHTML } from '@/components/cv-template/default/template-html';
 
 // Using consistent color constants
@@ -298,10 +298,6 @@ const Qualifications: React.FC<{ qualifications: QualificationEntry[] }> = ({ qu
 };
 
 export const CvDocument: React.FC<{ cvData: CVData }> = ({ cvData }) => {
-  const halfSkillsIndex = Math.ceil(cvData.skills.length / 2);
-  const keySkills = cvData.skills.slice(0, halfSkillsIndex);
-  const additionalSkills = cvData.skills.slice(halfSkillsIndex);
-
   return (
     <BaseTemplate cvData={cvData} />
   );
