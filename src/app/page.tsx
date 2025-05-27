@@ -6,7 +6,7 @@ import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
 import { CVPreview } from '@/components/cv-preview/cv-preview';
 import { Button } from '@/components/ui/button';
-import { Download, Eye, Wand2, ClipboardPaste, Save } from 'lucide-react';
+import { Download, Eye, Wand2, ClipboardPaste, Save, Menu } from 'lucide-react';
 import CvForgeLogo from '@/components/cv-forge-logo';
 import { useToast } from '@/hooks/use-toast';
 import AiEnhancementDialog from '@/components/ai-enhancement-dialog';
@@ -190,15 +190,15 @@ export default function CVForgePage() {
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto flex gap-8 py-8 px-4">
-        <div className="w-1/2">
+      <main className="flex-grow container mx-auto flex flex-col lg:flex-row gap-8 lg:py-8 py-4 px-4">
+        <div className="w-full lg:w-1/2">
           <CvEditor 
             cvData={cvData} 
             setCvData={setCvData} 
             openAiEnhanceDialog={openAiEnhanceDialog} 
           />
         </div>
-        <div className="w-1/2">
+        <div className="w-full lg:w-1/2">
           <CVPreview cvData={cvData} />
         </div>
       </main>
