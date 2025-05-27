@@ -32,14 +32,15 @@ const AiEnhancementDialog: React.FC<AiEnhancementDialogProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [suggestedText, setSuggestedText] = useState('');
+  const [prompt, setPrompt] = useState('');
   const { toast } = useToast();
 
   const fetchEnhancement = useCallback(async () => {
-    if (!originalText || !isOpen) return;
+    if (!originalText) return;
     setIsLoading(true);
     setSuggestedText(''); // Clear previous suggestion
 
-    const result = await enhanceTextWithAI(originalText);
+    const result = await enhanceTextWithAI(originalText, prompt);
     
     if (result.error) {
         toast({
@@ -56,14 +57,8 @@ const AiEnhancementDialog: React.FC<AiEnhancementDialogProps> = ({
         });
     }
     setIsLoading(false);
-  }, [originalText, isOpen, toast]);
+  }, [originalText, prompt, toast]);
 
-  useEffect(() => {
-    if (isOpen && originalText) {
-      fetchEnhancement();
-    }
-  }, [isOpen, originalText, fetchEnhancement]);
-  
   const handleApply = () => {
     if (suggestedText && suggestedText !== originalText) {
       onApplyEnhancement(suggestedText);
@@ -83,26 +78,42 @@ const AiEnhancementDialog: React.FC<AiEnhancementDialogProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 max-h-[60vh] overflow-y-auto p-1">
-          <div>
-            <h3 className="font-medium mb-2 text-lg text-foreground/90">Your Original Text:</h3>
-            <Textarea value={originalText} readOnly rows={10} className="bg-muted/50 border-muted text-sm" />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="prompt" className="text-sm font-medium text-foreground/90">
+              Enhancement Instructions (Optional)
+            </label>
+            <Textarea
+              id="prompt"
+              placeholder="E.g., Make it more professional, simplify the language, or focus on specific aspects..."
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              rows={2}
+              className="text-sm"
+            />
           </div>
-          <div>
-            <h3 className="font-medium mb-2 text-lg text-foreground/90">AI Suggestion:</h3>
-            {isLoading ? (
-              <div className="flex items-center justify-center h-full min-h-[200px] bg-muted/50 rounded-md">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="ml-2 text-muted-foreground">Generating suggestion...</p>
-              </div>
-            ) : (
-              <Textarea
-                value={suggestedText}
-                onChange={(e) => setSuggestedText(e.target.value)}
-                rows={10}
-                className="border-primary focus:ring-primary text-sm"
-              />
-            )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 my-6 max-h-[60vh] overflow-y-auto p-1">
+            <div>
+              <h3 className="font-medium mb-2 text-lg text-foreground/90">Your Original Text:</h3>
+              <Textarea value={originalText} readOnly rows={10} className="bg-muted/50 border-muted text-sm" />
+            </div>
+            <div>
+              <h3 className="font-medium mb-2 text-lg text-foreground/90">AI Suggestion:</h3>
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full min-h-[200px] bg-muted/50 rounded-md">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="ml-2 text-muted-foreground">Generating suggestion...</p>
+                </div>
+              ) : (
+                <Textarea
+                  value={suggestedText}
+                  onChange={(e) => setSuggestedText(e.target.value)}
+                  rows={10}
+                  className="border-primary focus:ring-primary text-sm"
+                />
+              )}
+            </div>
           </div>
         </div>
 
@@ -110,14 +121,24 @@ const AiEnhancementDialog: React.FC<AiEnhancementDialogProps> = ({
           <DialogClose asChild>
             <Button variant="outline">Cancel</Button>
           </DialogClose>
-          <Button
-            onClick={handleApply}
-            disabled={isLoading || !suggestedText}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground"
-          >
-            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" /> }
-            Use Suggestion
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={fetchEnhancement}
+              disabled={isLoading}
+              variant="outline"
+              className="text-primary border-primary hover:bg-primary/10"
+            >
+              {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              Generate Suggestion
+            </Button>
+            <Button
+              onClick={handleApply}
+              disabled={isLoading || !suggestedText}
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+            >
+              Use Suggestion
+            </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

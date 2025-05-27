@@ -6,7 +6,7 @@ import { type CVData, initialCvData } from '@/types/cv';
 import CvEditor from '@/components/cv-editor/cv-editor';
 import { CVPreview } from '@/components/cv-preview/cv-preview';
 import { Button } from '@/components/ui/button';
-import { Download, Eye, Wand2, ClipboardPaste } from 'lucide-react';
+import { Download, Eye, Wand2, ClipboardPaste, Save } from 'lucide-react';
 import CvForgeLogo from '@/components/cv-forge-logo';
 import { useToast } from '@/hooks/use-toast';
 import AiEnhancementDialog from '@/components/ai-enhancement-dialog';
@@ -16,8 +16,10 @@ import { pdf } from '@react-pdf/renderer';
 import { PDFPreviewModal } from '@/components/pdf-preview-modal';
 import { CVFileUpload } from '@/components/cv-file-upload';
 import { CVTextImportDialog } from '@/components/cv-text-import-dialog';
+import { CVHistoryMenu } from '@/components/cv-history-menu';
 
 const CV_STORAGE_KEY = 'cvForgeData';
+const ENABLE_CV_UPLOAD = false; // Feature flag to control CV upload functionality
 
 export default function CVForgePage() {
   const [cvData, setCvData] = useState<CVData>(initialCvData);
@@ -107,13 +109,50 @@ export default function CVForgePage() {
     });
   };
 
+  const handleSaveCV = () => {
+    try {
+      const savedCVsData = localStorage.getItem('cvForgeSavedCVs');
+      const savedCVs = savedCVsData ? JSON.parse(savedCVsData) : [];
+      
+      const newCV = {
+        id: crypto.randomUUID(),
+        name: cvData.personalInfo.name || 'Untitled CV',
+        date: new Date().toLocaleString(),
+        data: cvData
+      };
+
+      const updatedCVs = [...savedCVs, newCV];
+      localStorage.setItem('cvForgeSavedCVs', JSON.stringify(updatedCVs));
+      
+      toast({
+        title: "CV Saved",
+        description: "Your CV has been saved successfully.",
+      });
+    } catch (error) {
+      console.error("Error saving CV:", error);
+      toast({
+        title: "Error Saving CV",
+        description: "There was an issue saving your CV. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleLoadSavedCV = (cvData: CVData) => {
+    setCvData(cvData);
+    toast({
+      title: "CV Loaded",
+      description: "Your saved CV has been loaded successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <header className="sticky top-0 z-50 w-full border-b bg-card shadow-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <CvForgeLogo />
           <div className="flex gap-2">
-            <CVFileUpload onCvExtracted={handleCvExtracted} />
+            {ENABLE_CV_UPLOAD && <CVFileUpload onCvExtracted={handleCvExtracted} />}
             <Button
               variant="outline"
               onClick={() => setIsTextImportDialogOpen(true)}
@@ -133,6 +172,13 @@ export default function CVForgePage() {
             >
               <Eye className="mr-2 h-4 w-4" /> Preview PDF
             </Button>
+            <Button
+              variant="outline"
+              onClick={handleSaveCV}
+            >
+              <Save className="mr-2 h-4 w-4" /> Save CV
+            </Button>
+            <CVHistoryMenu onLoadCV={handleLoadSavedCV} />
             <Button 
               className="bg-accent hover:bg-accent/90 text-accent-foreground" 
               onClick={handleDownloadPDF}

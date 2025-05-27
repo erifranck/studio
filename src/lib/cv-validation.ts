@@ -36,10 +36,12 @@ export function preserveFactualData(
       : original.personalInfo.title,
   };
 
-  // Preserve experience factual data
-  validated.experience = enhanced.experience.map((enhancedExp, index) => {
-    const originalExp = original.experience[index];
-    if (!originalExp) return enhancedExp; // New entry (shouldn't happen)
+  // Preserve experience factual data while keeping all original experiences
+  validated.experience = original.experience.map((originalExp, index) => {
+    const enhancedExp = enhanced.experience[index];
+    
+    // If there's no enhanced version, keep the original
+    if (!enhancedExp) return originalExp;
 
     return {
       ...enhancedExp,
@@ -54,6 +56,11 @@ export function preserveFactualData(
       description: enhancedExp.description || originalExp.description,
     };
   });
+
+  // Add any new experiences from enhanced data that weren't in original
+  const originalExpIds = new Set(original.experience.map(exp => exp.id));
+  const newExperiences = enhanced.experience.filter(exp => !originalExpIds.has(exp.id));
+  validated.experience = [...validated.experience, ...newExperiences];
 
   // Preserve education factual data
   validated.education = enhanced.education.map((enhancedEdu, index) => {
@@ -161,4 +168,4 @@ export function detectModifiedFields(
   });
 
   return modifiedFields;
-} 
+}

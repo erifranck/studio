@@ -15,11 +15,15 @@ const ImproveCvContentInputSchema = z.object({
   text: z
     .string()
     .describe('The text from the CV that needs to be improved.'),
+  prompt: z
+    .string()
+    .optional()
+    .describe('Optional instructions for how to improve the text (e.g., "make it more professional", "simplify the language").'),
 });
 export type ImproveCvContentInput = z.infer<typeof ImproveCvContentInputSchema>;
 
 const ImproveCvContentOutputSchema = z.object({
-  improvedText: z.string().describe('The improved text for the CV section.'),
+  improvedText: z.string().describe('The improved version of the input text.'),
 });
 export type ImproveCvContentOutput = z.infer<typeof ImproveCvContentOutputSchema>;
 
@@ -32,6 +36,10 @@ const prompt = ai.definePrompt({
   input: {schema: ImproveCvContentInputSchema},
   output: {schema: ImproveCvContentOutputSchema},
   prompt: `You are an expert CV writer. You will receive a section of text from a CV, and you will improve the phrasing and word choice to make it more impactful.
+
+{{#if prompt}}
+Specific Instructions: {{{prompt}}}
+{{/if}}
 
 Text: {{{text}}}
 

@@ -5,13 +5,14 @@ import { enhanceFullCv as enhanceFullCvFlow, type EnhanceFullCvInput } from '@/a
 import { type CVData } from '@/types/cv';
 import { preserveFactualData, detectModifiedFields } from '@/lib/cv-validation';
 import { toast } from '@/hooks/use-toast'; // Assuming useToast can be used or adapted for server feedback if needed, or remove for client-side toast
+import { suggestSkills, type SuggestSkillsInput } from '@/ai/flows/suggest-skills';
 
-export async function enhanceTextWithAI(text: string): Promise<{ improvedText: string; error?: string }> {
+export async function enhanceTextWithAI(text: string, prompt?: string): Promise<{ improvedText: string; error?: string }> {
   if (!text.trim()) {
     return { improvedText: text, error: "Input text is empty." };
   }
   try {
-    const input: ImproveCvContentInput = { text };
+    const input: ImproveCvContentInput = { text, prompt };
     console.log("Sending to AI:", input);
     const result = await improveCvContentFlow(input);
     console.log("Received from AI:", result);
@@ -58,5 +59,16 @@ export async function enhanceFullCvWithAI(cvData: CVData, userPrompt?: string): 
     console.error("Error enhancing full CV with AI:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error during full CV enhancement.";
     return { enhancedCvData: cvData, error: `Full CV enhancement failed: ${errorMessage}` };
+  }
+}
+
+export async function suggestSkillsWithAI(input: SuggestSkillsInput): Promise<{ suggestedSkills: string[]; error?: string }> {
+  try {
+    const result = await suggestSkills(input);
+    return { suggestedSkills: result.suggestedSkills };
+  } catch (error) {
+    console.error("Error suggesting skills with AI:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error during skill suggestions.";
+    return { suggestedSkills: [], error: `Skill suggestions failed: ${errorMessage}` };
   }
 }
