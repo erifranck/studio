@@ -8,7 +8,8 @@ import ExperienceEditor from './experience-editor';
 import EducationEditor from './education-editor';
 import SkillsEditor from './skills-editor';
 import QualificationsEditor from './qualifications-editor';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { FormWizard } from '@/components/ui/form-wizard';
+import { FormWizardStep } from '@/components/ui/form-wizard-step';
 
 interface CvEditorProps {
   cvData: CVData;
@@ -18,16 +19,26 @@ interface CvEditorProps {
 
 const CvEditor: React.FC<CvEditorProps> = ({ cvData, setCvData, openAiEnhanceDialog }) => {
   return (
-    <ScrollArea className="h-[calc(100vh-120px)] pr-6 rounded-lg"> {/* Adjust height as needed */}
-      <div className="space-y-8">
+    <FormWizard className="h-[calc(100vh-120px)] w-full">
+      <FormWizardStep title="Personal Information">
         <PersonalInfoEditor personalInfo={cvData.personalInfo} setCvData={setCvData} />
+      </FormWizardStep>
+      <FormWizardStep title="Professional Summary">
         <SummaryEditor summary={cvData.summary} setCvData={setCvData} openAiEnhanceDialog={openAiEnhanceDialog} />
+      </FormWizardStep>
+      <FormWizardStep title="Work Experience">
         <ExperienceEditor experience={cvData.experience} setCvData={setCvData} openAiEnhanceDialog={openAiEnhanceDialog} />
+      </FormWizardStep>
+      <FormWizardStep title="Education">
         <EducationEditor education={cvData.education} setCvData={setCvData} />
+      </FormWizardStep>
+      <FormWizardStep title="Skills">
         <SkillsEditor skills={cvData.skills} setCvData={setCvData} />
+      </FormWizardStep>
+      <FormWizardStep title="Qualifications">
         <QualificationsEditor qualifications={cvData.qualifications} setCvData={setCvData} />
-      </div>
-    </ScrollArea>
+      </FormWizardStep>
+    </FormWizard>
   );
 };
 

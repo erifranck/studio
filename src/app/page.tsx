@@ -190,18 +190,16 @@ export default function CVForgePage() {
         </div>
       </header>
 
-      <main className="flex-grow container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 py-8 px-4">
-        <div className="md:pr-4">
+      <main className="flex-grow container mx-auto flex gap-8 py-8 px-4">
+        <div className="w-1/2">
           <CvEditor 
             cvData={cvData} 
             setCvData={setCvData} 
             openAiEnhanceDialog={openAiEnhanceDialog} 
           />
         </div>
-        <div className="relative">
-          <div className="md:sticky md:top-[calc(4rem+2rem)]">
-             <CVPreview cvData={cvData} />
-          </div>
+        <div className="w-1/2">
+          <CVPreview cvData={cvData} />
         </div>
       </main>
       
